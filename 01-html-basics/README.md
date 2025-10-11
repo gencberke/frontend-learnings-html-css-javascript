@@ -70,7 +70,7 @@ The DOCTYPE declaration tells the browser this is an HTML5 document. The html el
 
 ### Structure Tags
 
-**DOCTYPE**  
+**DOCTYPE declaration**  
 Tells the browser which HTML version to use. For modern development, always use HTML5.
 
 **html element**  
@@ -121,6 +121,187 @@ Create numbered lists. Use when sequence is important.
 **List items (li)**  
 Individual items within any list. Must be direct children of ul or ol elements.
 
+## Links and Navigation
+
+### The Anchor Tag
+
+The anchor tag creates hyperlinks, which are the foundation of the web. Invented in 1991, the concept of linking documents together revolutionized how we access information.
+
+**Basic syntax:**
+```html
+<a href="destination-url">Clickable Text</a>
+```
+
+The href attribute (hypertext reference) specifies where the link points to.
+
+### Link Types
+
+**Internal Links**  
+Point to other pages within your own website. Use relative paths.
+
+```html
+<a href="about.html">About Page</a>
+<a href="pages/contact.html">Contact</a>
+<a href="../index.html">Home</a>
+```
+
+**External Links**  
+Point to other websites. Always use the full URL with https://.
+
+```html
+<a href="https://github.com/gencberke" target="_blank" rel="noopener noreferrer">
+  My GitHub
+</a>
+```
+
+**Anchor Links**  
+Jump to specific sections within the same page.
+
+```html
+<a href="#section-id">Jump to Section</a>
+<!-- Later in the page -->
+<h2 id="section-id">Section Title</h2>
+```
+
+**Special Links**  
+Email and phone links that trigger native applications.
+
+```html
+<a href="mailto:email@example.com">Send Email</a>
+<a href="tel:+905551234567">Call Me</a>
+```
+
+### The target Attribute
+
+Controls where the linked document opens:
+
+- No target: Opens in the same tab (default)
+- `target="_blank"`: Opens in a new tab
+
+### Security: rel="noopener noreferrer"
+
+When using `target="_blank"`, always include `rel="noopener noreferrer"` for security and privacy. This is critical for external links.
+
+**The Security Issue:**
+
+When you open a link with `target="_blank"`, the new page gets access to your original page through the `window.opener` JavaScript object. Malicious sites can exploit this to redirect your original page to a phishing site.
+
+**Attack Scenario:**
+
+1. User clicks a link that opens in a new tab
+2. User reads content in the new tab
+3. Meanwhile, malicious JavaScript in the new tab executes:
+   ```javascript
+   window.opener.location = 'https://fake-login-page.com';
+   ```
+4. When user returns to the original tab, they see a fake login page
+5. User enters credentials thinking they were logged out
+6. Credentials are stolen
+
+This attack is called "Reverse Tabnabbing" or "Tab Nabbing."
+
+**The Solution:**
+
+```html
+<a href="https://external-site.com" target="_blank" rel="noopener noreferrer">
+  Safe External Link
+</a>
+```
+
+**What it does:**
+
+- `noopener`: Sets `window.opener` to null, preventing the new page from accessing your page
+- `noreferrer`: Prevents the browser from sending the Referrer header, adding privacy protection
+
+**Performance Bonus:**
+
+Pages opened with `noopener` run in a separate process, so if the new page is resource-intensive, it won't slow down your original page.
+
+**Modern Browser Behavior:**
+
+Chrome 88+ and Firefox 79+ automatically apply `noopener` behavior to `target="_blank"` links. However, you should still explicitly include it for:
+- Backward compatibility with older browsers
+- Clear security intent in your code
+- Passing security audits
+
+**When to use:**
+
+- Always on external links with `target="_blank"`
+- Always on user-generated content links
+- Not needed for internal navigation within your own site
+- Not needed for mailto: or tel: links
+
+Think of it like SQL injection protection in the backend. Even if modern frameworks have some built-in protection, you still sanitize inputs explicitly.
+
+## Images
+
+Images make web pages visually engaging. Web image support was added to browsers in 1993 with the Mosaic browser, which triggered the explosive growth of the web.
+
+**Basic syntax:**
+```html
+<img src="image-path.jpg" alt="Description of image">
+```
+
+The img tag is self-closing and doesn't have a closing tag.
+
+### Essential Attributes
+
+**src (source)**  
+Specifies the image location. Can be a relative path or full URL.
+
+```html
+<img src="profile.jpg" alt="Profile picture">
+<img src="images/logo.png" alt="Company logo">
+<img src="https://example.com/photo.jpg" alt="Remote image">
+```
+
+**alt (alternative text)**  
+Provides a text description of the image. This is crucial for:
+- Accessibility: Screen readers speak this text to visually impaired users
+- SEO: Search engines can't see images, they read alt text
+- Fallback: Shows if the image fails to load
+- Context: Describes what the image shows
+
+**Width and height**  
+Specify image dimensions in pixels. Modern practice is to set these in CSS instead, but they can be useful for preventing layout shifts during page load.
+
+```html
+<img src="photo.jpg" alt="Description" width="300" height="200">
+```
+
+### Relative Paths
+
+Understanding relative paths is essential for organizing your project:
+
+```
+project/
+├── index.html
+├── pages/
+│   └── about.html
+└── images/
+    └── photo.jpg
+```
+
+From index.html:
+```html
+<img src="images/photo.jpg" alt="Photo">
+```
+
+From pages/about.html:
+```html
+<img src="../images/photo.jpg" alt="Photo">
+```
+
+The `../` means "go up one directory level."
+
+### Best Practices
+
+Write descriptive alt text that explains what's in the image, not just labels. Compare:
+
+Bad: `alt="image"`  
+Better: `alt="profile picture"`  
+Best: `alt="Berke coding on a laptop at a coffee shop"`
+
 ## Best Practices
 
 Keep tag names in lowercase. While HTML is case-insensitive, lowercase is the widely accepted convention and makes code more readable.
@@ -135,14 +316,26 @@ Write semantic HTML. Use tags that describe their meaning, not just their appear
 
 One h1 per page. This should be the main topic of your page. Multiple h1 tags confuse search engines about what your page is actually about.
 
+For external links with target="_blank", always include rel="noopener noreferrer" for security.
+
+Write meaningful alt text for all images. This improves accessibility and SEO.
+
+Use relative paths for internal resources. This makes your site portable and easier to maintain.
+
 ## Project Files
 
-**index.html**  
-My first HTML page. A simple introduction with headings, paragraphs, and lists. Practicing proper document structure and semantic markup.
+**first-index.html**  
+The main landing page with introduction, learning goals, and backend experience. Includes internal navigation to the about page.
+
+**pages/about.html**  
+Personal profile page with skills, education information, and social media links. Demonstrates proper use of external links with security attributes and image implementation with alt text.
+
+**pages/images/profile-picture.jpeg**  
+Profile image demonstrating local image usage and proper file organization.
 
 ## What's Next
 
-The natural progression from here is to learn more HTML elements (links, images, forms) and then move into CSS for styling. Since my end goal is building a frontend for my Todo application, forms will be particularly important.
+The natural progression from here is to learn form elements, which are essential for the Todo application. Forms will allow user input, which connects directly to the backend API endpoints I'm familiar with from Spring Boot.
 
 ## Notes
 
